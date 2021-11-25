@@ -1,26 +1,19 @@
 #!/usr/bin/python
 
+from models import model
 from selenium import webdriver
 from webdriver_manager.chrome import ChromeDriverManager
 
 # from BeautifulSoup import BeautifulSoup
 from bs4 import BeautifulSoup, element
-from dataclasses import dataclass
-import logging
 import datetime
 
 import message
 
 
-@dataclass
-class House:
-    date: str
-    address: str
-    price: str
-    url: str
-
-
 Houses_Visited = {}
+email = ""
+password = ""
 
 
 def botify():
@@ -30,7 +23,6 @@ def botify():
     options.binary_location = "/usr/bin/google-chrome"
     chrome_driver_binary = "/usr/bin/chromedriver"
     browser = webdriver.Chrome(chrome_driver_binary, chrome_options=options)
-    logging.info("initating the browser!")
 
     # open the site
     browser.get(
@@ -40,21 +32,25 @@ def botify():
     browser.find_element_by_xpath(
         '//*[@id="js-cookie-modal-level-one"]/div/main/div/button[2]').click()
 
-    # time.sleep(5) # wait 5 seconds
+    # sign_in(browser)
+    scrape(browser)
+
+
+def sign_in(browser):
 
     # # Find and click sign in
     # # ========================
-    # browser.find_element_by_xpath('//*[@id="__next"]/header/div/div[2]/div[3]/ul/li[2]/a').click()
+    browser.find_element_by_xpath(
+        '//*[@id="__next"]/header/div/div[2]/div[3]/ul/li[2]/a').click()
 
     # # Credentials
-    # browser.find_element_by_xpath('//*[@id="username"]').send_keys(email)
-    # browser.find_element_by_xpath('//*[@id="password"]').send_keys(password)
+    browser.find_element_by_xpath('//*[@id="username"]').send_keys(email)
+    browser.find_element_by_xpath('//*[@id="password"]').send_keys(password)
 
     # # Click
-    # browser.find_element_by_xpath('//*[@id="kc-login-form"]/div[2]/input').click()
+    browser.find_element_by_xpath(
+        '//*[@id="kc-login-form"]/div[2]/input').click()
     # # ========================
-
-    scrape(browser)
 
 
 def sendMail(house, browser):
@@ -103,7 +99,7 @@ def scrape(browser):
 
     for house_scrape in soup.findAll('li', attrs={'class': 'SearchPage__Result-gg133s-2 itNYNv'}):
 
-        house = House("", "", "", "")
+        house = model.House("", "", "", "")
         # house.timestamp =
         house.price = house_scrape.find(
             "span", {"class": "TitleBlock__StyledSpan-sc-1avkvav-4 gDBFnc"}).text
