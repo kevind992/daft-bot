@@ -2,7 +2,6 @@
 
 import sqlite3
 
-
 def connect():
     conn = sqlite3.connect('bot_db.db')
     define_table(conn)
